@@ -57,4 +57,4 @@ RUN dpkg --add-architecture i386 && \
 	
 USER "$USER_ID:$GROUP_ID"
 
-VOLUME "$STEAM_PATH"
+VOLUME "/"
