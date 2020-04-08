@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 EXPOSE 27015/udp 27015/tcp
 
@@ -35,10 +35,15 @@ COPY ["entrypoint.sh", "experimental.sh", "forceWorkshopDownload.sh", "installAn
 RUN dpkg --add-architecture i386 && \
 	apt-get update -y && \
 	apt-get install -y mailutils postfix curl wget file bzip2 gzip unzip bsdmainutils python util-linux ca-certificates \
-		binutils bc jq tmux lib32gcc1 libstdc++6 libstdc++6:i386 lib32tinfo5 \
-		locales sudo cron && \
-	\
-	groupadd -g $GROUP_ID $DOCKER_USER && \
+		binutils bc jq tmux lib32gcc1 libstdc++6 libstdc++6:i386 lib32tinfo5 netcat lib32stdc++6 libtinfo5:i386\
+		locales sudo cron 
+
+RUN echo steam steam/question select "I AGREE" | debconf-set-selections && \
+    echo steam steam/license note '' | debconf-set-selections && \
+    DEBIAN_FRONTEND=noninteractive && \
+    apt install -y --no-install-recommends steamcmd
+
+RUN groupadd -g $GROUP_ID $DOCKER_USER && \
 	useradd -d "$STEAM_PATH" -g $GROUP_ID -u $USER_ID -m $DOCKER_USER && \
 	chown "$DOCKER_USER:$DOCKER_USER" /home/entrypoint.sh && \
 	sudo -u "$DOCKER_USER" mkdir -p "$SERVER_PATH" && \
